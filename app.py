@@ -2,7 +2,7 @@ from flask import Flask
 from extensions import db
 from config import Config
 from flask import render_template, redirect, url_for, flash, request
-from forms import RegisterForm
+from forms import RegisterForm, LoginForm
 
 
 
@@ -46,8 +46,27 @@ def create_app():
             flash("Registration sucessful!", "sucess")
             return redirect(url_for("home"))
         
-#Get or validation erros fall through to here
+    #Get or validation erros fall through to here
         return render_template("register.html", form = form)
+    
+    @app.route("/login", methods = ['GET', 'POST'])
+    def login():
+        form = LoginForm()
+        if form.validate_on_submit():
+            #scaning user by email
+            user = User.query.filter_by(email = form.email.data).first()
+
+            if user and user.check_password(form.password.data):
+                #Successful login redirect to home page
+                return redirect(url_for('home'))
+            else:
+                flash("Invalid Email or Incorrect Password", "danger")
+                return render_template('login.html', form = form)
+            
+        #GET request or form validation erros fall here
+        return render_template("login.html", form = form)
+
+
     
     @app.route("/")
     def home():
