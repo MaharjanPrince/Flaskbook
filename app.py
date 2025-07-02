@@ -86,7 +86,7 @@ def create_app():
     @app.route("/")
     @login_required
     def home():
-        return "<h1>Welcome to FlaskBook!</h1>"
+        return render_template("index.html")
 
     return app
 
