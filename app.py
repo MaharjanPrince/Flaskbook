@@ -1,8 +1,12 @@
 from flask import Flask
+from flask_login import LoginManager
+from flask_login import login_user
+from flask_login import login_required, current_user
 from extensions import db
 from config import Config
 from flask import render_template, redirect, url_for, flash, request
 from forms import RegisterForm, LoginForm
+from models import User
 
 
 
@@ -13,6 +17,16 @@ def create_app():
     app.config.from_object(Config) #load settings
 
     db.init_app(app) #plugging SQLAlchemy into flask
+    login_manager = LoginManager()
+    login_manager.login_view = 'login'  # redirect to login page if not logged in
+    login_manager.init_app(app)
+
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+    
+    
 
     #Creating tables
     from models import User
@@ -57,6 +71,7 @@ def create_app():
             user = User.query.filter_by(email = form.email.data).first()
 
             if user and user.check_password(form.password.data):
+                login_user(user, remember=form.remember.data)
                 #Successful login redirect to home page
                 return redirect(url_for('home'))
             else:
@@ -69,6 +84,7 @@ def create_app():
 
     
     @app.route("/")
+    @login_required
     def home():
         return "<h1>Welcome to FlaskBook!</h1>"
 

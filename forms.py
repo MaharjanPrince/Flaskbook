@@ -6,20 +6,20 @@ class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[
         DataRequired(), Length(min=3, max= 50)
     ])
-    email = StringField('email', validators=[
+    email = StringField('Email', validators=[
         DataRequired(), Email()
     ])
     password = PasswordField('Password', validators=[
         DataRequired(), Length(min=6)
     ])
-    confirm = PasswordField('Conform Password', validators=[
+    confirm = PasswordField('Confrim Password', validators=[
         DataRequired(), EqualTo('password', message="Passwords must match")
     ])
     Submit = SubmitField('Register')
 
 
 class LoginForm(FlaskForm):
-    email = StringField('email', validators=[
+    email = StringField('Email', validators=[
         DataRequired(), Email()
     ])
     password = PasswordField('Password', validators=[
